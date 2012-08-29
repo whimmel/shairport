@@ -1,0 +1,44 @@
+#!/sbin/runscript
+#
+# This starts and stops shairport
+#
+### BEGIN INIT INFO
+# Provides:          shairport
+# Required-Start:    $network
+# Required-Stop:
+# Short-Description: shairport - Airtunes emulator!
+# Description:       Airtunes emulator!
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+### END INIT INFO
+
+
+# Source function library.
+#. /lib/lsb/init-functions
+
+NAME=shairport
+DAEMON="/usr/local/bin/shairport.pl"
+PIDFILE=/var/run/$NAME.pid
+DAEMON_ARGS="-w $PIDFILE"
+
+[ -x $binary ] || exit 0
+
+RETVAL=0
+
+depend() {
+    use net
+}
+
+start() {
+    ebegin "Starting shairport"
+    start-stop-daemon --start --quiet --pidfile "$PIDFILE" \
+                      --exec "$DAEMON" -b -- $DAEMON_ARGS
+    eend $? "Failed to start shairport"
+}
+
+stop() {
+    ebegin "Shutting down shairport"
+    start-stop-daemon --stop --quiet --pidfile "$PIDFILE" \
+                --retry 1 
+    eend $? "Failed to stop shairport"
+}
